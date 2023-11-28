@@ -1,25 +1,46 @@
-import logo from './logo.svg';
+import { useEffect, useState } from 'react';
 import './App.css';
-
+import { Button } from '@mui/material';
+import { Routes, Route,useNavigate} from 'react-router-dom';
+import { ThemeProvider,createTheme  } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { AddList } from './AddList';
+import { NotFoundPage } from './NotFoundPage';
+import { EditList } from './EditList';
+import { Home } from './Home';
+import { Lists } from './Lists';
 function App() {
+  const [lists,setLists]=useState([])
+  const Navigate=useNavigate()
+  const theme = createTheme();
+  useEffect(()=>{
+    fetch("https://jsonplaceholder.typicode.com/users")
+    .then((res)=>res.json())
+    .then((data)=>setLists(data))
+  },[])
+
   return (
+    <ThemeProvider theme={theme}>
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <CssBaseline />
+    <div className="navbar">
+          <Button onClick={() => Navigate('/')}>Home</Button>
+          <Button onClick={() => Navigate('/AllLists')}>All Lists</Button>
+          <Button onClick={() => Navigate('/addlist')}>Add Lists</Button>
+        </div>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/AllLists" element={<Lists lists={lists}  setLists={setLists}/>} />
+        <Route path="/edit/:listid" element={<EditList />} />
+        <Route path="/addlist" element={<AddList lists={lists}  setLists={setLists} />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Routes>
+
     </div>
+    </ThemeProvider>
   );
 }
 
 export default App;
+
+
